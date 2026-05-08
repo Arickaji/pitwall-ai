@@ -22,3 +22,8 @@ ipykernel==7.2.0
 # Utilities
 python-dotenv==1.0.1
 loguru==0.7.2
+
+# Database
+sqlalchemy==2.0.30
+psycopg2-binary==2.9.9
+alembic==1.13.1
