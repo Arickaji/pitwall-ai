@@ -4,12 +4,10 @@ Core module for loading and accessing Formula 1 session data via FastF1.
 """
 
 from pathlib import Path
-from typing import Optional
 
 import fastf1
 import pandas as pd
 from loguru import logger
-
 
 # ── Cache Configuration ────────────────────────────────────────────────────────
 
@@ -78,6 +76,7 @@ def _validate_inputs(year: int, gp: str, session_type: str) -> str:
 
 # ── Core Loader ────────────────────────────────────────────────────────────────
 
+
 def load_session(
     year: int,
     gp: str,
@@ -132,7 +131,7 @@ def load_laps(
     year: int,
     gp: str,
     session_type: str,
-    driver: Optional[str] = None,
+    driver: str | None = None,
 ) -> pd.DataFrame:
     """
     Load lap data for a session, optionally filtered by driver.
@@ -181,7 +180,7 @@ def load_telemetry(
     gp: str,
     session_type: str,
     driver: str,
-    lap_number: Optional[int] = None,
+    lap_number: int | None = None,
 ) -> pd.DataFrame:
     """
     Load telemetry data for a specific driver, optionally for one lap.
@@ -218,9 +217,7 @@ def load_telemetry(
     if lap_number is not None:
         lap = driver_laps[driver_laps["LapNumber"] == lap_number]
         if lap.empty:
-            raise ValueError(
-                f"Lap {lap_number} not found for driver '{driver_upper}'."
-            )
+            raise ValueError(f"Lap {lap_number} not found for driver '{driver_upper}'.")
         lap = lap.iloc[0]
         logger.info(f"Loading telemetry: {driver_upper} lap {lap_number}")
     else:
