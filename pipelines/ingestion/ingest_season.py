@@ -10,6 +10,7 @@ from loguru import logger
 
 from core.data.f1_loader import load_laps
 from pipelines.ingestion.storage import save_laps
+from pipelines.ingestion.validation import validate_laps
 
 logging.getLogger("fastf1").setLevel(logging.WARNING)
 
@@ -81,6 +82,15 @@ def ingest_season(
         try:
             # Load from FastF1
             laps = load_laps(year, gp_name, session_type)
+
+            # Validate before saving
+            validation = validate_laps(laps, gp_name, session_type)
+
+            if not validation["is_valid"]:
+                raise ValueError(
+                    f"Data quality too low: {validation['quality_score']}% "
+                    f"({validation['invalid_laps']} invalid laps)"
+                )
 
             # Save as Parquet
             save_laps(laps, year, gp_name, session_type)
