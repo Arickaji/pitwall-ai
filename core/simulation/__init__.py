@@ -1,3 +1,8 @@
+from core.simulation.pit_optimizer import (
+    OptimizationResult,
+    PitOptimizer,
+    PitOption,
+)
 from core.simulation.race_simulator import (
     DriverState,
     RaceSimulator,
@@ -10,4 +15,7 @@ __all__ = [
     "RaceSimulator",
     "RaceState",
     "SimulationResult",
+    "PitOptimizer",
+    "OptimizationResult",
+    "PitOption",
 ]
