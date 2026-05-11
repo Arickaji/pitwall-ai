@@ -9,6 +9,14 @@ from core.simulation.race_simulator import (
     RaceState,
     SimulationResult,
 )
+from core.simulation.safety_car import (
+    SafetyCarEvent,
+    SCStrategyResult,
+    analyze_sc_strategy,
+    calculate_sc_probability,
+    detect_sc_events,
+    inject_sc_into_simulation,
+)
 
 __all__ = [
     "DriverState",
@@ -18,4 +26,10 @@ __all__ = [
     "PitOptimizer",
     "OptimizationResult",
     "PitOption",
+    "SafetyCarEvent",
+    "SCStrategyResult",
+    "calculate_sc_probability",
+    "detect_sc_events",
+    "analyze_sc_strategy",
+    "inject_sc_into_simulation",
 ]
