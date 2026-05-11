@@ -17,6 +17,16 @@ from core.simulation.safety_car import (
     detect_sc_events,
     inject_sc_into_simulation,
 )
+from core.simulation.weather import (
+    TyreRecommendation,
+    WeatherEvent,
+    WeatherSnapshot,
+    build_lap_weather,
+    detect_weather_events,
+    load_race_weather,
+    recommend_tyre_for_conditions,
+    weather_adjusted_degradation,
+)
 
 __all__ = [
     "DriverState",
@@ -32,4 +42,12 @@ __all__ = [
     "detect_sc_events",
     "analyze_sc_strategy",
     "inject_sc_into_simulation",
+    "WeatherSnapshot",
+    "WeatherEvent",
+    "TyreRecommendation",
+    "load_race_weather",
+    "build_lap_weather",
+    "detect_weather_events",
+    "recommend_tyre_for_conditions",
+    "weather_adjusted_degradation",
 ]
