@@ -227,7 +227,9 @@ else:
         render_strategy(laps, clean_laps, year, gp)
 
     with tab3:
-        st.info("Degradation dashboard — coming soon")
+        from ui.dashboards.components.degradation import render_degradation
+
+        render_degradation(laps, clean_laps, year, gp)
 
     with tab4:
         st.info("Simulation dashboard — coming soon")
