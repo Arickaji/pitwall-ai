@@ -232,7 +232,9 @@ else:
         render_degradation(laps, clean_laps, year, gp)
 
     with tab4:
-        st.info("Simulation dashboard — coming soon")
+        from ui.dashboards.components.simulation import render_simulation
+
+        render_simulation(laps, clean_laps, year, gp)
 
     with tab5:
         st.info("Telemetry dashboard — coming soon")

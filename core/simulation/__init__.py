@@ -1,3 +1,7 @@
+from core.simulation.monte_carlo import (
+    MonteCarloResult,
+    MonteCarloSimulator,
+)
 from core.simulation.pit_optimizer import (
     OptimizationResult,
     PitOptimizer,
@@ -50,4 +54,6 @@ __all__ = [
     "detect_weather_events",
     "recommend_tyre_for_conditions",
     "weather_adjusted_degradation",
+    "MonteCarloSimulator",
+    "MonteCarloResult",
 ]
