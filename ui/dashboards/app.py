@@ -237,4 +237,6 @@ else:
         render_simulation(laps, clean_laps, year, gp)
 
     with tab5:
-        st.info("Telemetry dashboard — coming soon")
+        from ui.dashboards.components.telemetry import render_telemetry
+
+        render_telemetry(laps, clean_laps, year, gp)
