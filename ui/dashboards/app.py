@@ -222,7 +222,9 @@ else:
         render_race_overview(laps, clean_laps, year, gp)
 
     with tab2:
-        st.info("Strategy dashboard — coming soon")
+        from ui.dashboards.components.strategy import render_strategy
+
+        render_strategy(laps, clean_laps, year, gp)
 
     with tab3:
         st.info("Degradation dashboard — coming soon")
