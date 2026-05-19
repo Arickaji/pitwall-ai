@@ -33,9 +33,15 @@ data/cache/
 # Data files (raw/processed data should not be in git)
 data/raw/
 data/processed/
+data/ml/
 *.csv
 *.parquet
 *.feather
+
+# ML Models (too large for git)
+*.pkl
+*.joblib
+*.model
 
 # OS
 .DS_Store
@@ -57,3 +63,6 @@ node_modules/
 
 # Docker (for later phases)
 .dockerignore
+
+# Streamlit
+.streamlit/secrets.toml
