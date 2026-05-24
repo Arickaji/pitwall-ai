@@ -66,3 +66,7 @@ node_modules/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Frontend
+apps/frontend/.next/
+apps/frontend/node_modules/
