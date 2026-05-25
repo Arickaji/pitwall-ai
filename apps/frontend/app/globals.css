@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+/* ── PitWall AI — F1 Design System ─────────────────────────────────────── */
+
+:root {
+  /* Core colors */
+  --background:        #0A0A0F;
+  --surface:           #12121A;
+  --border:            #1E1E2E;
+  --primary:           #00D2BE;
+  --secondary:         #FF1E00;
+  --accent:            #FFD700;
+  --text-primary:      #FFFFFF;
+  --text-secondary:    #8B8B9E;
+  --success:           #00FF87;
+  --warning:           #FFB800;
+
+  /* Compound colors */
+  --soft:              #FF3333;
+  --medium:            #FFD700;
+  --hard:              #CCCCCC;
+  --inter:             #39B54A;
+  --wet:               #0067FF;
+}
+
+@theme inline {
+  --color-background:     var(--background);
+  --color-surface:        var(--surface);
+  --color-border:         var(--border);
+  --color-primary:        var(--primary);
+  --color-secondary:      var(--secondary);
+  --color-accent:         var(--accent);
+  --color-text-primary:   var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-success:        var(--success);
+  --color-warning:        var(--warning);
+  --font-mono:            'JetBrains Mono', 'Fira Code', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--text-primary);
+  font-family: 'Inter', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--surface); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+/* Selection */
+::selection { background: var(--primary); color: var(--background); }
