@@ -86,7 +86,7 @@ class TelemetryRecord(BaseModel):
     speed: float | None
     throttle: float | None
     brake: float | None
-    rpm: int | None
+    rpm: float | None
     gear: int | None
     drs: int | None
     x: float | None
