@@ -75,7 +75,8 @@ pitwall-ai/
 | Phase 5 | Machine Learning — Pit stop, tire, position prediction models | ✅ Complete  |
 | Phase 6 | Visualization Platform — Premium F1-style dashboards | ✅ Complete |
 | Phase 7 | Backend Platform — FastAPI simulation and prediction endpoints | ✅ Complete |
-| Phase 8 | Deployment — Public platform on Railway/Render + Docker | ⏳ Planned |
+| Phase 8 | React Front | ✅ Complete |
+| Phase 9 | Deployment + Docker | Planning |
 
 ---
 
