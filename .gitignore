@@ -70,3 +70,6 @@ node_modules/
 # Frontend
 apps/frontend/.next/
 apps/frontend/node_modules/
+
+# legacy Folder for the streamlit app
+legacy/
