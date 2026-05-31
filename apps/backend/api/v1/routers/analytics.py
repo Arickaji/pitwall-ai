@@ -40,15 +40,12 @@ async def get_degradation(request: DegradationRequest):
     Returns degradation rate, base pace and cliff lap per driver per stint.
     """
     try:
+        from apps.backend.dependencies import get_cached_laps
         from core.analytics.degradation import analyze_race_degradation
-        from core.data.f1_loader import load_laps
 
-        laps = load_laps(
-            request.year,
-            request.gp,
-            request.session_type,
-            driver=request.driver,
-        )
+        laps = get_cached_laps(request.year, request.gp, request.session_type)
+        if request.driver:
+            laps = laps[laps["Driver"] == request.driver.upper()]
         deg = analyze_race_degradation(laps)
 
         records = [
@@ -102,10 +99,12 @@ async def get_pace(request: PaceRequest):
     Returns median pace, best lap, consistency and gap to fastest.
     """
     try:
+        from apps.backend.dependencies import get_cached_laps
         from core.analytics.pace import full_race_pace_summary
-        from core.data.f1_loader import load_laps
 
-        laps = load_laps(request.year, request.gp, request.session_type)
+        laps = get_cached_laps(request.year, request.gp, request.session_type)
+        if request.reference_driver:
+            laps = laps[laps["Driver"] == request.reference_driver.upper()]
         summary = full_race_pace_summary(laps)
 
         records = [
@@ -145,10 +144,10 @@ async def scan_undercut(request: UndercutRequest):
     Returns all viable undercut opportunities ranked by laps to complete.
     """
     try:
+        from apps.backend.dependencies import get_cached_laps
         from core.analytics.strategy import scan_undercut_opportunities
-        from core.data.f1_loader import load_laps
 
-        laps = load_laps(request.year, request.gp, request.session_type)
+        laps = get_cached_laps(request.year, request.gp, request.session_type)
         opportunities = scan_undercut_opportunities(
             laps,
             lap_number=request.lap_number,
@@ -203,11 +202,12 @@ async def run_monte_carlo(request: MonteCarloRequest):
     Returns win probability distribution for all drivers.
     """
     try:
-        from core.data.f1_loader import load_laps
+        from apps.backend.dependencies import get_cached_laps
         from core.simulation.monte_carlo import MonteCarloSimulator
         from core.simulation.race_simulator import RaceSimulator
 
-        laps = load_laps(request.year, request.gp, request.session_type)
+        laps = get_cached_laps(request.year, request.gp, request.session_type)
+
         total_laps = int(laps["LapNumber"].max())
 
         sim = RaceSimulator(laps, total_laps=total_laps)
@@ -251,11 +251,13 @@ async def optimize_pit(request: PitOptimizerRequest):
     Evaluates all pit options in window and ranks by projected position.
     """
     try:
-        from core.data.f1_loader import load_laps
+        from apps.backend.dependencies import get_cached_laps
         from core.simulation.pit_optimizer import PitOptimizer
         from core.simulation.race_simulator import RaceSimulator
 
-        laps = load_laps(request.year, request.gp, request.session_type)
+        laps = get_cached_laps(request.year, request.gp, request.session_type)
+        if request.driver:
+            laps = laps[laps["Driver"] == request.driver.upper()]
         total_laps = int(laps["LapNumber"].max())
 
         sim = RaceSimulator(laps, total_laps=total_laps)
@@ -308,10 +310,10 @@ async def simulate_race(request: RaceSimRequest):
     Returns final standings and winner.
     """
     try:
-        from core.data.f1_loader import load_laps
+        from apps.backend.dependencies import get_cached_laps
         from core.simulation.race_simulator import RaceSimulator
 
-        laps = load_laps(request.year, request.gp, request.session_type)
+        laps = get_cached_laps(request.year, request.gp, request.session_type)
         total_laps = int(laps["LapNumber"].max())
 
         sim = RaceSimulator(laps, total_laps=total_laps)

@@ -1,0 +1,81 @@
+# ── PitWall AI — Docker Compose ───────────────────────────────────────────────
+
+services:
+
+  # ── PostgreSQL Database ──────────────────────────────────────────────────────
+  db:
+    image: postgres:14-alpine
+    container_name: pitwall-db
+    environment:
+      POSTGRES_DB:       pitwall_ai
+      POSTGRES_USER:     pitwall_user
+      POSTGRES_PASSWORD: pitwall_pass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pitwall_user -d pitwall_ai"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - pitwall-network
+
+  # ── FastAPI Backend ──────────────────────────────────────────────────────────
+  backend:
+    volumes:
+      - ./data/cache:/app/data/cache
+      - ./data/ml/models:/app/data/ml/models
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile
+    container_name: pitwall-backend
+    environment:
+      DB_HOST:     db
+      DB_PORT:     5432
+      DB_NAME:     pitwall_ai
+      DB_USER:     pitwall_user
+      DB_PASSWORD: pitwall_pass
+      DEBUG:       "false"
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - pitwall-network
+    restart: unless-stopped
+
+  # ── Next.js Frontend ─────────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./apps/frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:8000/api/v1
+    container_name: pitwall-frontend
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000/api/v1
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - pitwall-network
+    restart: unless-stopped
+
+# ── Volumes ───────────────────────────────────────────────────────────────────
+volumes:
+  postgres_data:
+    name: pitwall_postgres_data
+  fastf1_cache:
+    name: pitwall_fastf1_cache
+  ml_models:
+    name: pitwall_ml_models
+
+# ── Networks ──────────────────────────────────────────────────────────────────
+networks:
+  pitwall-network:
+    name: pitwall-network
+    driver: bridge
