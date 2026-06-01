@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: pitwall-api
+    runtime: docker
+    dockerfilePath: apps/backend/Dockerfile
+    dockerContext: .
+    plan: free
+    envVars:
+      - key: DEBUG
+        value: "false"
+    healthCheckPath: /health

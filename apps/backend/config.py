@@ -22,9 +22,11 @@ class Settings(BaseSettings):
 
     # CORS
     allowed_origins: list[str] = [
-        "http://localhost:3000",  # React dev
-        "http://localhost:8501",  # Streamlit
-        "http://localhost:8000",  # FastAPI itself
+        "http://localhost:3000",
+        "http://localhost:8501",
+        "http://localhost:8000",
+        "https://pitwall-ai-ochre.vercel.app",
+        "https://*.vercel.app",
     ]
 
     # Database
