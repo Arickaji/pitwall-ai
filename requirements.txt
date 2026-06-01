@@ -1,29 +1,15 @@
-# Data
 fastf1==3.8.3
 pandas==2.3.3
 numpy==1.26.4
-
-# Machine Learning
+plotly==5.22.0
 scikit-learn==1.7.2
 xgboost==2.0.3
-
-# Visualization
-plotly==5.22.0
-streamlit==1.35.0
-
-# Backend
+loguru==0.7.2
+python-dotenv==1.0.1
+pydantic==2.13.4
+pydantic-settings==2.2.1
 fastapi==0.111.0
 uvicorn==0.30.1
-
-# Notebook
-jupyter==1.0.0
-ipykernel==7.2.0
-
-# Utilities
-python-dotenv==1.0.1
-loguru==0.7.2
-
-# Database
 sqlalchemy==2.0.30
 psycopg2-binary==2.9.9
-alembic==1.13.1
+requests-cache==1.2.0

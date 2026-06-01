@@ -109,9 +109,11 @@ async def get_laps(
     Returns 50 laps per page by default.
     """
     try:
-        from core.data.f1_loader import load_laps
+        from apps.backend.dependencies import get_cached_laps
 
-        laps = load_laps(year, gp, session_type, driver=driver)
+        laps = get_cached_laps(year, gp, session_type)
+        if driver:
+            laps = laps[laps["Driver"] == driver.upper()]
 
         # Convert timedelta to seconds
         laps = laps.copy()
