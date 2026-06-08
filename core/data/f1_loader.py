@@ -3,6 +3,7 @@ PitWall AI — F1 Race Data Loader
 Core module for loading and accessing Formula 1 session data via FastF1.
 """
 
+import os
 from pathlib import Path
 
 import fastf1
@@ -118,10 +119,16 @@ _patch_fastf1_schedule()
 
 
 def _enable_cache() -> None:
-    """Enable FastF1 cache, creating the directory if it doesn't exist."""
-    _CACHE_DIR.mkdir(parents=True, exist_ok=True)
-    fastf1.Cache.enable_cache(str(_CACHE_DIR))
-    logger.debug(f"FastF1 cache enabled at: {_CACHE_DIR}")
+    """Enable FastF1 cache unless disabled via environment variable."""
+    if os.getenv("FASTF1_NO_CACHE"):
+        logger.info("FastF1 cache disabled via FASTF1_NO_CACHE env var")
+        return
+    try:
+        _CACHE_DIR.mkdir(parents=True, exist_ok=True)
+        fastf1.Cache.enable_cache(str(_CACHE_DIR))
+        logger.debug(f"FastF1 cache enabled at: {_CACHE_DIR}")
+    except Exception as e:
+        logger.warning(f"Cache unavailable: {e} — running without cache")
 
 
 # ── Input Validation ───────────────────────────────────────────────────────────
