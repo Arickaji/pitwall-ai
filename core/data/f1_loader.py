@@ -14,10 +14,6 @@ _PROJECT_ROOT = Path(__file__).resolve().parents[2]
 # ── Cache Configuration ────────────────────────────────────────────────────────
 _CACHE_DIR = _PROJECT_ROOT / "data" / "cache"
 
-# Enable cache at module level so all FastF1 calls use it
-_CACHE_DIR.mkdir(parents=True, exist_ok=True)
-fastf1.Cache.enable_cache(str(_CACHE_DIR))
-
 # ── FastF1 Schedule Patch ──────────────────────────────────────────────────────
 
 

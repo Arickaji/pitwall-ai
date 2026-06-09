@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRace } from '@/context/RaceContext';
+import { api } from '@/lib/api';
 import dynamic from 'next/dynamic';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
@@ -70,16 +71,13 @@ export default function SimulationPage() {
   async function runMonteCarlo() {
     setMcLoading(true);
     try {
-      const res = await fetch('http://localhost:8000/api/v1/simulate/monte-carlo', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          year: session.year, gp: session.gp,
-          session_type: session.session,
-          from_lap: fromLap, n_simulations: nSims,
-        }),
-      });
-      setMcResult(await res.json());
+      setMcResult(await api.runMonteCarlo(
+        session.year,
+        session.gp,
+        session.session,
+        fromLap,
+        nSims,
+      ));
     } catch (e) { console.error(e); }
     finally { setMcLoading(false); }
   }
@@ -87,15 +85,12 @@ export default function SimulationPage() {
   async function runSimulation() {
     setSimLoading(true);
     try {
-      const res = await fetch('http://localhost:8000/api/v1/simulate/race', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          year: session.year, gp: session.gp,
-          session_type: session.session, from_lap: simFromLap,
-        }),
-      });
-      setSimResult(await res.json());
+      setSimResult(await api.simulateRace(
+        session.year,
+        session.gp,
+        session.session,
+        simFromLap,
+      ));
     } catch (e) { console.error(e); }
     finally { setSimLoading(false); }
   }
@@ -103,17 +98,14 @@ export default function SimulationPage() {
   async function runOptimizer() {
     setOptLoading(true);
     try {
-      const res = await fetch('http://localhost:8000/api/v1/simulate/pit-optimizer', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          year: session.year, gp: session.gp,
-          session_type: session.session,
-          driver: optDriver, from_lap: optFromLap,
-          new_compound: optCompound,
-        }),
-      });
-      setOptResult(await res.json());
+      setOptResult(await api.optimizePit(
+        session.year,
+        session.gp,
+        session.session,
+        optDriver,
+        optFromLap,
+        optCompound,
+      ));
     } catch (e) { console.error(e); }
     finally { setOptLoading(false); }
   }

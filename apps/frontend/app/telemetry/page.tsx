@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRace } from '@/context/RaceContext';
+import { api } from '@/lib/api';
 import dynamic from 'next/dynamic';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
@@ -64,16 +65,13 @@ export default function TelemetryPage() {
     setLoading(true);
     setError('');
     try {
-      const lapParam = lapNum ? `?lap_number=${lapNum}&page_size=1000` : '?page_size=1000';
-
-      const [res1, res2] = await Promise.all([
-        fetch(`http://localhost:8000/api/v1/telemetry/${session.year}/${encodeURIComponent(session.gp)}/${session.session}/${driver1}${lapParam}`),
-        fetch(`http://localhost:8000/api/v1/telemetry/${session.year}/${encodeURIComponent(session.gp)}/${session.session}/${driver2}${lapParam}`),
+      const [d1, d2] = await Promise.all([
+        api.getTelemetry(session.year, session.gp, session.session, driver1, lapNum || undefined),
+        api.getTelemetry(session.year, session.gp, session.session, driver2, lapNum || undefined),
       ]);
 
-      const [d1, d2] = await Promise.all([res1.json(), res2.json()]);
-      setTel1(d1.data || []);
-      setTel2(d2.data || []);
+      setTel1(d1.data);
+      setTel2(d2.data);
     } catch (e: any) {
       setError(e.message);
     } finally {

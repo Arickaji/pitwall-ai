@@ -26,8 +26,8 @@ class Settings(BaseSettings):
         "http://localhost:8501",
         "http://localhost:8000",
         "https://pitwall-ai-ochre.vercel.app",
-        "https://*.vercel.app",
     ]
+    allowed_origin_regex: str = r"https://.*\.vercel\.app"
 
     # Database
     db_host: str = "localhost"

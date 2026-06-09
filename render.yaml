@@ -8,4 +8,6 @@ services:
     envVars:
       - key: DEBUG
         value: "false"
+      - key: FASTF1_NO_CACHE
+        value: "true"
     healthCheckPath: /health

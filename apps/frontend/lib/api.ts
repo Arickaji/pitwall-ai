@@ -3,7 +3,9 @@
  * Typed API calls to the FastAPI backend.
  */
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+const API_BASE = (
+  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'
+).replace(/\/+$/, '');
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -75,12 +77,68 @@ export interface PositionResult {
   probability: number;
 }
 
+export interface TelemetryRecord {
+  distance: number | null;
+  speed: number | null;
+  throttle: number | null;
+  brake: number | null;
+  rpm: number | null;
+  gear: number | null;
+  drs: number | null;
+  x: number | null;
+  y: number | null;
+}
+
+export interface UndercutRecord {
+  driver: string;
+  rival: string;
+  gap: number;
+  pace_delta: number;
+  laps_to_complete: number;
+  gap_after_stop: number;
+}
+
+export interface LapDeltaPrediction {
+  predicted_delta: number;
+  tyre_life: number;
+  compound: string;
+  interpretation: string;
+}
+
+export interface PitOption {
+  pit_lap: number;
+  projected_position: number;
+  gap_to_ahead: number;
+  gap_to_behind: number;
+  compound: string;
+  score: number;
+}
+
+export interface PitOptimization {
+  optimal_lap: number;
+  recommendation: string;
+  all_options: PitOption[];
+}
+
 // ── API Helpers ────────────────────────────────────────────────────────────────
+
+async function parseResponse<T>(res: Response): Promise<T> {
+  if (res.ok) return res.json();
+
+  let message = `API request failed (${res.status})`;
+  try {
+    const payload = await res.json();
+    message = payload.detail || payload.error || message;
+  } catch {
+    // Keep the status-based message when the response is not JSON.
+  }
+
+  throw new Error(message);
+}
 
 async function get<T>(path: string): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`);
-  if (!res.ok) throw new Error(`API error: ${res.status}`);
-  return res.json();
+  return parseResponse<T>(res);
 }
 
 async function post<T>(path: string, body: object): Promise<T> {
@@ -89,8 +147,7 @@ async function post<T>(path: string, body: object): Promise<T> {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   });
-  if (!res.ok) throw new Error(`API error: ${res.status}`);
-  return res.json();
+  return parseResponse<T>(res);
 }
 
 // ── API Functions ──────────────────────────────────────────────────────────────
@@ -108,12 +165,40 @@ export const api = {
       `/laps/${year}/${encodeURIComponent(gp)}/${session}?page=${page}&page_size=${pageSize}`
     ),
 
+  getTelemetry: (
+    year: number,
+    gp: string,
+    session: string,
+    driver: string,
+    lapNumber?: number,
+  ) => {
+    const params = new URLSearchParams({ page_size: '1000' });
+    if (lapNumber) params.set('lap_number', String(lapNumber));
+    return get<{ data: TelemetryRecord[] }>(
+      `/telemetry/${year}/${encodeURIComponent(gp)}/${session}/${driver}?${params}`
+    );
+  },
+
   // Analytics
   getPace: (year: number, gp: string, session: string) =>
     post<{ data: PaceRecord[] }>('/analytics/pace', { year, gp, session_type: session }),
 
   getDegradation: (year: number, gp: string, session: string) =>
     post<{ data: DegradationRecord[] }>('/analytics/degradation', { year, gp, session_type: session }),
+
+  scanUndercut: (
+    year: number,
+    gp: string,
+    session: string,
+    lapNumber: number,
+    lapsRemaining: number,
+  ) => post<{ data: UndercutRecord[] }>('/analytics/undercut', {
+    year,
+    gp,
+    session_type: session,
+    lap_number: lapNumber,
+    laps_remaining: lapsRemaining,
+  }),
 
   // Simulation
   simulateRace: (year: number, gp: string, session: string, fromLap: number) =>
@@ -126,12 +211,33 @@ export const api = {
       year, gp, session_type: session, from_lap: fromLap, n_simulations: nSims,
     }),
 
+  optimizePit: (
+    year: number,
+    gp: string,
+    session: string,
+    driver: string,
+    fromLap: number,
+    newCompound: string,
+  ) => post<PitOptimization>('/simulate/pit-optimizer', {
+    year,
+    gp,
+    session_type: session,
+    driver,
+    from_lap: fromLap,
+    new_compound: newCompound,
+  }),
+
   // ML Predictions
   predictPitStop: (params: {
     tyre_life: number; compound: string; position: number;
     gap_ahead: number; gap_behind: number; laps_remaining: number;
     lap_time: number; deg_rate: number;
   }) => post<PitPrediction>('/predict/pit-stop', params),
+
+  predictLapDelta: (params: {
+    tyre_life: number; compound: string; stint: number;
+    laps_remaining: number; deg_rate: number;
+  }) => post<LapDeltaPrediction>('/predict/lap-delta', params),
 
   predictPosition: (params: {
     current_position: number; laps_remaining: number; tyre_life: number;

@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+
+# Data — runtime cache and datasets are too large for the image
+data/cache/
+data/raw/
+data/processed/
+data/ml/training_dataset.parquet
+
+# ML models — mounted as volume instead
+*.pkl
+*.joblib
+
+# Frontend
+apps/frontend/node_modules/
+apps/frontend/.next/
+
+# Legacy
+legacy/
+
+# Git
+.git/
+.github/
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+
+# Env
+.env
