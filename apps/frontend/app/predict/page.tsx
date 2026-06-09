@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRace } from '@/context/RaceContext';
+import { api } from '@/lib/api';
 import dynamic from 'next/dynamic';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
@@ -94,11 +95,7 @@ export default function PredictPage() {
   async function predictPit() {
     setPitLoading(true);
     try {
-      const res = await fetch('http://localhost:8000/api/v1/predict/pit-stop', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(pitParams),
-      });
-      setPitResult(await res.json());
+      setPitResult(await api.predictPitStop(pitParams));
     } catch (e) { console.error(e); }
     finally { setPitLoading(false); }
   }
@@ -106,11 +103,7 @@ export default function PredictPage() {
   async function predictDeg() {
     setDegLoading(true);
     try {
-      const res = await fetch('http://localhost:8000/api/v1/predict/lap-delta', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(degParams),
-      });
-      setDegResult(await res.json());
+      setDegResult(await api.predictLapDelta(degParams));
     } catch (e) { console.error(e); }
     finally { setDegLoading(false); }
   }
@@ -118,11 +111,7 @@ export default function PredictPage() {
   async function predictPos() {
     setPosLoading(true);
     try {
-      const res = await fetch('http://localhost:8000/api/v1/predict/position', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(posParams),
-      });
-      setPosResult(await res.json());
+      setPosResult(await api.predictPosition(posParams));
     } catch (e) { console.error(e); }
     finally { setPosLoading(false); }
   }

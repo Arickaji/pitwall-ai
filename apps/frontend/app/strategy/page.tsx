@@ -87,19 +87,14 @@ export default function StrategyPage() {
     setScanning(true);
     try {
       const totalLaps = Math.max(...laps.map(l => l.lap_number));
-      const res = await fetch('http://localhost:8000/api/v1/analytics/undercut', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          year: session.year,
-          gp: session.gp,
-          session_type: session.session,
-          lap_number: scanLap,
-          laps_remaining: totalLaps - scanLap,
-        }),
-      });
-      const data = await res.json();
-      setUndercutData(data.data || []);
+      const data = await api.scanUndercut(
+        session.year,
+        session.gp,
+        session.session,
+        scanLap,
+        totalLaps - scanLap,
+      );
+      setUndercutData(data.data);
     } catch (e) {
       console.error(e);
     } finally {
