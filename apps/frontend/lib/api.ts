@@ -3,9 +3,13 @@
  * Typed API calls to the FastAPI backend.
  */
 
-const API_BASE = (
+const configuredApiUrl = (
   process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'
 ).replace(/\/+$/, '');
+
+const API_BASE = configuredApiUrl.endsWith('/api/v1')
+  ? configuredApiUrl
+  : `${configuredApiUrl}/api/v1`;
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
