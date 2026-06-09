@@ -106,7 +106,8 @@ def _patch_fastf1_schedule():
         return _original(year, **kwargs)
 
     _ev.get_event_schedule = _patched
-    # Also patch get_session to use patched get_event_schedule
+    # FastF1 re-exports this function at package level, so patch both names.
+    fastf1.get_event_schedule = _patched
     logger.debug("FastF1 schedule patched to use local JSON files")
 
 
