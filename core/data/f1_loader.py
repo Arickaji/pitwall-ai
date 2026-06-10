@@ -13,6 +13,7 @@ from loguru import logger
 _PROJECT_ROOT = Path(__file__).resolve().parents[2]
 # ── Cache Configuration ────────────────────────────────────────────────────────
 _CACHE_DIR = _PROJECT_ROOT / "data" / "cache"
+_SEED_DIR = _PROJECT_ROOT / "data" / "seed"
 
 # ── FastF1 Schedule Patch ──────────────────────────────────────────────────────
 
@@ -126,6 +127,31 @@ def _enable_cache() -> None:
         logger.debug(f"FastF1 cache enabled at: {_CACHE_DIR}")
     except Exception as e:
         logger.warning(f"Cache unavailable: {e} — running without cache")
+
+
+def _load_seeded_laps(
+    year: int,
+    gp: str,
+    session_type: str,
+) -> pd.DataFrame | None:
+    """Load bundled lap data when cloud hosts cannot reach F1 timing feeds."""
+    seed_file = _SEED_DIR / f"laps_{year}.pkl.gz"
+    if not seed_file.exists():
+        return None
+
+    seeded = pd.read_pickle(seed_file, compression="gzip")
+    matches = seeded[
+        (seeded["_GrandPrix"].str.casefold() == gp.casefold())
+        & (seeded["_SessionType"].str.upper() == session_type.upper())
+    ]
+    if matches.empty:
+        return None
+
+    logger.info(f"Loading bundled laps: {year} {gp} {session_type}")
+    return matches.drop(
+        columns=["_Year", "_GrandPrix", "_SessionType"],
+        errors="ignore",
+    ).reset_index(drop=True)
 
 
 # ── Input Validation ───────────────────────────────────────────────────────────
@@ -352,8 +378,20 @@ def load_laps(
         >>> laps = load_laps(2024, 'Bahrain', 'R')
         >>> laps = load_laps(2024, 'Bahrain', 'R', driver='VER')
     """
-    session = load_session(year, gp, session_type)
-    laps = session.laps
+    session_type = _validate_inputs(year, gp, session_type)
+    laps = None
+
+    if os.getenv("PREFER_SEEDED_DATA") or os.getenv("FASTF1_NO_CACHE"):
+        laps = _load_seeded_laps(year, gp, session_type)
+
+    if laps is None:
+        try:
+            session = load_session(year, gp, session_type)
+            laps = session.laps
+        except RuntimeError:
+            laps = _load_seeded_laps(year, gp, session_type)
+            if laps is None:
+                raise
 
     if driver is not None:
         driver_upper = driver.upper()

@@ -10,4 +10,6 @@ services:
         value: "false"
       - key: FASTF1_NO_CACHE
         value: "true"
+      - key: PREFER_SEEDED_DATA
+        value: "true"
     healthCheckPath: /health
